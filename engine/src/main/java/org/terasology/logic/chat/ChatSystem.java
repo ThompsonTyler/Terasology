@@ -74,7 +74,6 @@ public class ChatSystem extends BaseComponentSystem {
         if (event.getState() == ButtonState.DOWN) {
             nuiManager.pushScreen(CHAT_UI);
             overlay.setVisible(false);
-            event.consume();
         }
     }
 

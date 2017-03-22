@@ -29,6 +29,8 @@ import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.input.ButtonState;
 import org.terasology.input.Input;
 import org.terasology.input.InputSystem;
+import org.terasology.input.binds.general.ChatButton;
+import org.terasology.input.binds.general.ConsoleButton;
 import org.terasology.input.binds.interaction.FrobButton;
 import org.terasology.input.binds.inventory.UseItemButton;
 import org.terasology.input.binds.movement.AutoMoveButton;
@@ -315,6 +317,24 @@ public class LocalPlayerSystem extends BaseComponentSystem implements UpdateSubs
             jump = false;
         }
     }
+
+    /** When a player opens chat they should stop moving(unless autorun is enabled)*/
+    @ReceiveEvent(components = {ClientComponent.class})
+    public void updateChatOpen(ChatButton event, EntityRef entity){
+        if(event.isDown()) {
+            relativeMovement.x = 0;
+            if (!isAutoMove) {
+                relativeMovement.z = 0;
+            }
+            ClientComponent clientComp = entity.getComponent(ClientComponent.class);
+            CharacterMovementComponent move = clientComp.character.getComponent(CharacterMovementComponent.class);
+            if (move.mode == MovementMode.CROUCHING) {
+                standPlayer(entity);
+            }
+            run = runPerDefault;
+        }
+    }
+
 
     @ReceiveEvent(components = {ClientComponent.class})
     public void updateForwardsMovement(ForwardsMovementAxis event, EntityRef entity) {
